@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Enforce - Página Inicial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Define uma fonte agradável */
+            background-color: #f0f8ff; /* Cor de fundo suave */
+            color: #333; /* Cor do texto */
+            display: flex; /* Flexbox para centralizar */
+            flex-direction: column; /* Direção da coluna */
+            align-items: center; /* Centraliza horizontalmente */
+            justify-content: center; /* Centraliza verticalmente */
+            height: 100vh; /* Altura total da viewport */
+            margin: 0; /* Remove margens padrão */
+        }
+        
+        h1 {
+            color: #2c3e50; /* Cor do título */
+            margin-bottom: 40px; /* Espaço abaixo do título */
+        }
+        
+        button {
+            background-color: #3498db; /* Cor de fundo dos botões */
+            color: white; /* Cor do texto dos botões */
+            border: none; /* Remove a borda */
+            border-radius: 5px; /* Cantos arredondados */
+            padding: 15px 30px; /* Espaçamento interno */
+            font-size: 18px; /* Tamanho da fonte */
+            cursor: pointer; /* Cursor em forma de mão */
+            margin: 10px; /* Espaço entre os botões */
+            transition: background-color 0.3s; /* Transição suave para o fundo */
+        }
+        
+        button:hover {
+            background-color: #2980b9; /* Cor do botão ao passar o mouse */
+        }
+    </style>
+</head>
+<body>
+    <h1>Bem-vindo ao Skills Enforce</h1>
+    
+    <button onclick="window.location.href='/admin/login/'">Login como RH</button>  <!-- Leva para o login do Django Admin -->
+    <button onclick="window.location.href='/login/gestor/'">Login como Gestor</button>
+</body>
+</html>
+
+

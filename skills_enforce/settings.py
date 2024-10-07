@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'skills_enforce.urls'
@@ -130,3 +128,12 @@ INTERNAL_IPS = [
     # "127.0.0.1" é o IP para localhost
     "127.0.0.1",
 ]
+
+# Redirecionamento após login
+LOGIN_REDIRECT_URL = '/'  # Página para onde o usuário será redirecionado após o login
+
+# Redirecionamento em caso de logout
+LOGOUT_REDIRECT_URL = '/'
+
+LOGIN_URL = '/login/'
+

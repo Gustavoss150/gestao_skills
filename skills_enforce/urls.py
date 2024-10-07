@@ -14,17 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# skills_enforce/urls.py
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.contrib.auth import views as auth_views  # Corrigido: Import da view de autenticação
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('core.urls')),  # Inclui as rotas do app core
+    path('login/', auth_views.LoginView.as_view(), name='login'),  # Rota para o login do Django
 ]
 
-from django.urls import include, path
-
-urlpatterns = [
-    # outras urls
-    path('__debug__/', include('debug_toolbar.urls')),
-]
 
