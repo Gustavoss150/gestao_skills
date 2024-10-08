@@ -1,0 +1,61 @@
+/* core/static/css/dashboard_gestor.css */
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos do corpo */
+body {
+    font-family: 'Roboto', sans-serif; /* Ou outra fonte que você está usando */
+    background-color: #f4f4f4; /* Cor de fundo suave */
+    color: #333; /* Cor do texto */
+}
+
+/* Estilos do contêiner do dashboard */
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #e63946; /* Cor para o título (exemplo: vermelho) */
+}
+
+/* Estilo de listas */
+ul {
+    list-style-type: none; /* Remove marcadores de lista */
+    padding: 20px;
+}
+
+li {
+    background: #fff; /* Cor de fundo branca para itens da lista */
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Estilo para links */
+a {
+    color: #457b9d; /* Cor do link (exemplo: azul) */
+    text-decoration: none; /* Remove o sublinhado */
+}
+
+a:hover {
+    text-decoration: underline; /* Sublinha ao passar o mouse */
+}
+
+/* Estilo do botão */
+input[type="submit"] {
+    background-color: #e63946; /* Cor de fundo do botão */
+    color: #fff; /* Cor do texto do botão */
+    padding: 10px 20px; /* Espaçamento interno */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer; /* Muda o cursor ao passar o mouse */
+    transition: background-color 0.3s; /* Transição suave */
+}
+
+input[type="submit"]:hover {
+    background-color: #d62839; /* Cor do botão ao passar o mouse */
+}

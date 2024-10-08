@@ -1,9 +1,38 @@
-﻿<h2>Login como Gestor</h2>
-<form action="{% url 'login_gestor' %}" method="post">
-    {% csrf_token %}
-    <label for="username">Usuário:</label>
-    <input type="text" id="username" name="username"><br><br>
-    <label for="password">Senha:</label>
-    <input type="password" id="password" name="password"><br><br>
-    <input type="submit" value="Login como Gestor">
-</form>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login como Gestor</title>
+    <!-- Carregar a tag static -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login_gestor.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login como Gestor</h2>
+        <form method="post" action="{% url 'login_gestor' %}">
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.non_field_errors }}
+                <label for="id_username">Nome de usuário:</label>
+                {{ form.username.errors }}
+                {{ form.username }}
+            </div>
+            <div class="form-row">
+                {{ form.password.errors }}
+                <label for="id_password">Senha:</label>
+                {{ form.password }}
+            </div>
+            <div class="submit-row">
+                <input type="submit" value="Entrar">
+            </div>
+            <div class="password-reset-link">
+                <div class="password-reset-link">
+                    <a href="#">Esqueceu sua senha ou nome de usuário?</a>
+                </div>                
+            </div>
+        </form>
+    </div>
+</body>
+</html>

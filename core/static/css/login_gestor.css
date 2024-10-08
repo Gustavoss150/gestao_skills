@@ -1,0 +1,88 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#header {
+    background-color: #b30000; /* Vermelho no lugar do azul */
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: #b30000;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    position: relative;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.form-row input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid #b30000;
+    outline: none;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.submit-row input {
+    background-color: #b30000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+.submit-row input:hover {
+    background-color: #800000;
+}
+
+.password-reset-link a {
+    text-decoration: none;
+    color: #b30000;
+    font-size: 14px;
+}
+
+.password-reset-link a:hover {
+    color: #800000;
+}
+
+.errornote {
+    color: #b30000;
+    margin-bottom: 20px;
+}
+
+#content-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
