@@ -140,3 +140,5 @@ LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = '/login/'
 
+LANGUAGE_CODE = 'pt-br'  # ou 'pt' dependendo da sua preferência
+
