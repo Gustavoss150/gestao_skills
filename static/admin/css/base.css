@@ -10,7 +10,7 @@ html[data-theme="light"],
     --accent: #f5dd5d;
     --primary-fg: #fff;
 
-    --body-fg: #333;
+    --body-fg: #000;
     --body-bg: #fff;
     --body-quiet-color: #666;
     --body-medium-color: #444;
@@ -25,31 +25,30 @@ html[data-theme="light"],
     --breadcrumbs-link-fg: var(--body-bg);
     --breadcrumbs-bg: #264b5d;
 
-    --link-fg: #417893;
-    --link-hover-color: #036;
+    --link-fg: #000;
+    --link-hover-color: #3f0000;
     --link-selected-fg: var(--secondary);
 
-    --hairline-color: #e8e8e8;
-    --border-color: #ccc;
-
-    --error-fg: #ba2121;
+    --hairline-color: #bdbdbd;
+    --border-color: #d6d6d6;
+    --error-fg: #d6d6d6;
 
     --message-success-bg: #dfd;
-    --message-warning-bg: #ffc;
-    --message-error-bg: #ffefef;
+    --message-warning-bg: rgb(155, 28, 28);
+    --message-error-bg: #3f0000;
 
-    --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
-    --selected-bg: #e4e4e4; /* E.g. selected table cells */
+    --darkened-bg: #e9e8e8; /* A bit darker than --body-bg */
+    --selected-bg: #dbdbdb; /* E.g. selected table cells */
     --selected-row: #ffc;
 
     --button-fg: #fff;
     --button-bg: var(--secondary);
-    --button-hover-bg: #205067;
-    --default-button-bg: #205067;
+    --button-hover-bg: #a41515;
+    --default-button-bg: #a41515;
     --default-button-hover-bg: var(--secondary);
     --close-button-bg: #747474;
     --close-button-hover-bg: #333;
-    --delete-button-bg: #ba2121;
+    --delete-button-bg: #b30000;
     --delete-button-hover-bg: #a41515;
 
     --object-tools-fg: var(--button-fg);
@@ -105,7 +104,7 @@ body {
 /* LINKS */
 
 a:link, a:visited {
-    color: whitesmoke;
+    color: #000;
     text-decoration: none;
     transition: color 0.15s, background 0.15s;
 }
