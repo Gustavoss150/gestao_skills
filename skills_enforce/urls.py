@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),  # Inclui as rotas do app core
     path('login/', auth_views.LoginView.as_view(), name='login'),  # Rota para o login do Django
+    path('gestor/', include('gestor.urls')),
 ]
 
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Enforce</title>
+    <link rel="stylesheet" href="{% static 'gestor/css/base_gestor.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .skill-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .skill-list li {
+            background-color: #e7f3fe;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Gestão</h1>
+
+        <!-- Tabela de Funcionários e suas Skills -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome do Funcionário</th>
+                    <th>Cargo</th>
+                    <th>Data de Contratação</th>
+                    <th>Skills</th>
+                    <th>Comprovação de Treinamento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in funcionarios %}
+                <tr>
+                    <td>{{ funcionario.nome }}</td>
+                    <td>{{ funcionario.cargo }}</td>
+                    <td>{{ funcionario.data_contratacao }}</td>
+                    <td>
+                        <ul class="skill-list">
+                            {% for skill in funcionario.skills.all %}
+                                <li>{{ skill.nome }} - {{ skill.descricao }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ funcionario.comprovacao_treinamento }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
