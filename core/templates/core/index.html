@@ -21,6 +21,12 @@
             color: #2c3e50; /* Cor do título */
             margin-bottom: 40px; /* Espaço abaixo do título */
         }
+
+        img {
+            max-width: 100%; /* Largura máxima da imagem para não exceder a tela */
+            height: auto; /* Mantém a proporção da imagem */
+            margin-bottom: 20px; /* Espaço abaixo da imagem */
+        }
         
         button {
             background-color: #b30000; /* Cor de fundo dos botões */
@@ -40,11 +46,10 @@
     </style>
 </head>
 <body>
-    <h1>Bem-vindo ao Skills Enforce</h1>
+    <img src="static/img/2.png" alt="Imagem de Boas-Vindas"> <!-- Insira o caminho da sua imagem -->
+    <h1>Bem-vindo a plataforma de Gestão de Skills</h1>
     
     <button onclick="window.location.href='/admin/login/'">Login como RH</button>  <!-- Leva para o login do Django Admin -->
     <button onclick="window.location.href='/login/gestor/'">Login como Gestor</button>
 </body>
 </html>
-
-
