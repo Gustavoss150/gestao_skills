@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'gestor',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +120,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # Estáticos do core (login_gestor.css, style.css)
-    BASE_DIR / "gestor/static",  # Estáticos do gestor (ainda vazia, mas para uso futuro)
 ]
 
 
