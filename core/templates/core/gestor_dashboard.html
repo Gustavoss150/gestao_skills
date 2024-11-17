@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Gestor</title>
+</head>
+<body>
+    <h1>Dashboard do Gestor</h1>
+    <h2>Seus setores:</h2>
+    <ul>
+        {% for setor in setores %}
+            <li>{{ setor }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

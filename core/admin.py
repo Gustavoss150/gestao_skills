@@ -101,25 +101,41 @@ class FuncionarioAdmin(admin.ModelAdmin):
     # Restringir a visualização de funcionários por setor para gestores
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.funcionario.is_rh:
-            return qs  # RH vê todos os funcionários
-        elif request.user.funcionario.is_gestor:
-            return qs.filter(setor=request.user.funcionario.setor)  # Gestor vê apenas seu setor
-        return qs.none()  # Caso de usuários sem permissão definida
+        if request.user.is_superuser:  # Superuser vê tudo
+            return qs
+        try:
+            funcionario = request.user.funcionario
+            if funcionario.is_rh:
+                return qs  # RH vê todos os funcionários
+            elif funcionario.is_gestor:
+                return qs.filter(setor=funcionario.setor)  # Gestor vê apenas seu setor
+        except Funcionario.DoesNotExist:
+            return qs.none()  # Caso de usuários sem permissão definida
+        return qs.none()
 
     # Permitir adição apenas para RH
     def has_add_permission(self, request):
-        return request.user.funcionario.is_rh
+        try:
+            return request.user.funcionario.is_rh
+        except Funcionario.DoesNotExist:
+            return False
 
     # Permitir alterações com base no cargo e setor
     def has_change_permission(self, request, obj=None):
-        if request.user.funcionario.is_rh:
-            return True  # RH pode modificar qualquer um
-        if request.user.funcionario.is_gestor:
-            return obj and obj.setor == request.user.funcionario.setor  # Gestor pode modificar apenas seu setor
+        try:
+            funcionario = request.user.funcionario
+            if funcionario.is_rh:
+                return True  # RH pode modificar qualquer um
+            if funcionario.is_gestor:
+                return obj and obj.setor == funcionario.setor  # Gestor pode modificar apenas seu setor
+        except Funcionario.DoesNotExist:
+            return False
         return False
 
     # Permitir exclusão apenas para RH
     def has_delete_permission(self, request, obj=None):
-        return request.user.funcionario.is_rh
+        try:
+            return request.user.funcionario.is_rh
+        except Funcionario.DoesNotExist:
+            return False
 

@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),  # Página inicial
-    path('login/', views.login_view, name='login'),  # Login normal
     path('login/rh/', views.login_rh, name='login_rh'),  # Login como RH
-    path('exportar-funcionarios/', views.exportar_funcionarios, name='exportar_funcionarios'),  # Exportar funcionários
+    path('login/gestor/', views.login_gestor, name='login_gestor'),  # Login como Gestor
+    path('gestor/dashboard/', views.gestor_dashboard, name='gestor_dashboard'),  # Dashboard do Gestor
 ]
