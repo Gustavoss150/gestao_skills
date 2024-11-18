@@ -1,64 +1,92 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard do Gestor</title>
+﻿{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+    {{ block.super }}
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
             margin: 20px;
         }
+
         h1 {
-            color: #333;
+            color: #b30000;
         }
+
+        h2 {
+            color: #b30000;
+            margin-top: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         table, th, td {
             border: 1px solid #ddd;
         }
+
         th, td {
             padding: 12px;
             text-align: left;
         }
+
         th {
             background-color: #f4f4f4;
         }
+
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+
+        .empty-row {
+            text-align: center;
+            background-color: #fff;
+            color: #b30000;
+            font-weight: bold;
+        }
+
+        .errornote {
+            color: #b30000;
+            margin-bottom: 20px;
+        }
     </style>
-</head>
-<body>
-    <h1>Dashboard do Gestor</h1>
-    <h2>Setor: {{ setor.nome }}</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Cargo</th>
-                <th>Data de Contratação</th>
-                <th>Treinamento Concluído</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for funcionario in funcionarios %}
-                <tr>
-                    <td>{{ funcionario.nome }}</td>
-                    <td>{{ funcionario.cargo.nome|default:"Sem Cargo" }} }}</td>
-                    <td>{{ funcionario.data_contratacao }}</td>
-                    <td>{{ funcionario.comprovacao_treinamento|default:"Não" }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4">Nenhum funcionário encontrado neste setor.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+        <div class="container">
+            <h1>Dashboard do Gestor</h1>
+            <h2>Setor: {{ setor.nome }}</h2>
+
+            {% if funcionarios %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Cargo</th>
+                            <th>Data de Contratação</th>
+                            <th>Treinamento Concluído</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for funcionario in funcionarios %}
+                            <tr>
+                                <td>{{ funcionario.nome }}</td>
+                                <td>{{ funcionario.cargo.nome|default:"Sem Cargo" }}</td>
+                                <td>{{ funcionario.data_contratacao }}</td>
+                                <td>{{ funcionario.comprovacao_treinamento|yesno:"Sim,Não" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="errornote">Nenhum funcionário encontrado neste setor.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

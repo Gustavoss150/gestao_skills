@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Funcionario
+from .models import Funcionario, Notificacao
 import csv
 
 def index(request):
@@ -80,6 +80,85 @@ def gestor_dashboard(request):
         'funcionarios': funcionarios,
         'setor': setor_do_gestor
     })
+
+
+@login_required
+def exportar_funcionarios(request):
+    """
+    Exporta funcionários em um arquivo CSV.
+    """
+    # Garante que somente usuários autorizados podem exportar
+    if not request.user.is_staff and not (hasattr(request.user, 'funcionario') and request.user.funcionario.is_rh):
+        return HttpResponse("Acesso negado", status=403)
+
+    # Configura a resposta como CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="funcionarios.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Nome', 'Setor', 'Cargo', 'Data de Contratação', 'Treinamento Concluído', 'Skills'])
+
+    # Obtém os funcionários
+    funcionarios = Funcionario.objects.select_related('setor', 'cargo').prefetch_related('skills')
+    for funcionario in funcionarios:
+        skills = ", ".join(skill.nome for skill in funcionario.skills.all())
+        writer.writerow([
+            funcionario.nome,
+            funcionario.setor.nome if funcionario.setor else "Sem Setor",
+            funcionario.cargo.nome if funcionario.cargo else "Sem Cargo",
+            funcionario.data_contratacao,
+            "Sim" if funcionario.comprovacao_treinamento else "Não",
+            skills
+        ])
+
+    return response
+
+
+# Função utilitária para verificar se um usuário é um gestor
+def usuario_eh_gestor(user):
+    """
+    Retorna True se o usuário for um gestor.
+    """
+    return hasattr(user, 'funcionario') and user.funcionario.is_gestor
+
+
+@login_required
+def notificacoes(request):
+    """
+    Exibe as notificações para o usuário logado.
+    """
+    # Verifica se o usuário está autenticado
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redireciona para a página de login
+
+    # Obtém o funcionário associado ao usuário logado
+    try:
+        funcionario = Funcionario.objects.get(usuario=request.user)
+    except Funcionario.DoesNotExist:
+        return HttpResponse("Funcionário não encontrado", status=404)
+
+    # Acesse as notificações do usuário diretamente através do campo 'usuario'
+    notificacoes = Notificacao.objects.filter(usuario=request.user)
+
+    return render(request, 'admin/notificacoes.html', {
+        'notificacoes': notificacoes
+    })
+
+
+@login_required
+def marcar_notificacao_lida(request, notificacao_id):
+    """
+    Marca a notificação como lida.
+    """
+    try:
+        notificacao = request.user.funcionario.notificacoes.get(id=notificacao_id)
+        notificacao.lida = True
+        notificacao.save()
+        return redirect('notificacoes')  # Redireciona de volta para a lista de notificações
+    except Funcionario.DoesNotExist:
+        return HttpResponse("Funcionario não encontrado", status=404)
+    except Notificacao.DoesNotExist:
+        return HttpResponse("Notificação não encontrada", status=404)
 
 
 @login_required
