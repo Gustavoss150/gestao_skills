@@ -1,10 +1,10 @@
 from django.contrib import admin
 from .models import Funcionario, Skill, Setor, Cargo, FuncionarioSkill
 from django.contrib.auth.models import User, Group
-import csv  # Import necessário para exportar CSV
-from django.http import HttpResponse  # Import necessário para resposta HTTP
+import csv
+from django.http import HttpResponse
 
-# Remover User e Group do admin, como antes
+# Remover User e Group do admin
 admin.site.unregister(User)
 admin.site.unregister(Group)
 
@@ -46,12 +46,53 @@ class SkillAdmin(admin.ModelAdmin):
     list_display = ('nome', 'descricao')
     search_fields = ('nome',)
 
+    def get_model_perms(self, request):
+        """Permitir que apenas o RH veja o modelo de Skill no admin."""
+        perms = super().get_model_perms(request)
+        try:
+            if not request.user.funcionario.is_rh:
+                perms['change'] = False
+                perms['delete'] = False
+                perms['add'] = False
+        except Funcionario.DoesNotExist:
+            perms['change'] = False
+            perms['delete'] = False
+            perms['add'] = False
+        return perms
+
+    # Não exibe o modelo de Skill para o Gestor no menu
+    def get_list_display(self, request):
+        if hasattr(request.user, 'funcionario') and request.user.funcionario.is_rh:
+            return ('nome', 'descricao')  # Só exibe para RH
+        return ()  # Para gestores, não exibe nada
+
+
 # Configuração do admin para Cargos
 @admin.register(Cargo)
 class CargoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'setor')
     search_fields = ('nome',)
     list_filter = ('setor',)
+
+    def get_model_perms(self, request):
+        """Permitir que apenas o RH veja o modelo de Cargo no admin."""
+        perms = super().get_model_perms(request)
+        try:
+            if not request.user.funcionario.is_rh:
+                perms['change'] = False
+                perms['delete'] = False
+                perms['add'] = False
+        except Funcionario.DoesNotExist:
+            perms['change'] = False
+            perms['delete'] = False
+            perms['add'] = False
+        return perms
+
+    def get_list_display(self, request):
+        if hasattr(request.user, 'funcionario') and request.user.funcionario.is_rh:
+            return ('nome', 'setor')  # Só exibe para RH
+        return ()  # Para gestores, não exibe nada
+
 
 # Inline para exibir funcionários dentro dos setores
 class FuncionarioInline(admin.TabularInline):
@@ -73,6 +114,26 @@ class SetorAdmin(admin.ModelAdmin):
         return ", ".join(set(funcionario.cargo.nome for funcionario in obj.funcionario_set.all() if funcionario.cargo))
     get_cargos.short_description = 'Cargos'
 
+    def get_model_perms(self, request):
+        """Permitir que apenas o RH veja o modelo de Setor no admin."""
+        perms = super().get_model_perms(request)
+        try:
+            if not request.user.funcionario.is_rh:
+                perms['change'] = False
+                perms['delete'] = False
+                perms['add'] = False
+        except Funcionario.DoesNotExist:
+            perms['change'] = False
+            perms['delete'] = False
+            perms['add'] = False
+        return perms
+
+    def get_list_display(self, request):
+        if hasattr(request.user, 'funcionario') and request.user.funcionario.is_rh:
+            return ('nome', 'get_funcionarios', 'get_cargos')  # Só exibe para RH
+        return ()  # Para gestores, não exibe nada
+
+
 # Inline para FuncionarioSkill
 class FuncionarioSkillInline(admin.TabularInline):
     model = FuncionarioSkill
@@ -81,7 +142,7 @@ class FuncionarioSkillInline(admin.TabularInline):
 # Configuração do admin para Funcionários com permissões de RH e gestor
 @admin.register(Funcionario)
 class FuncionarioAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'cargo', 'data_contratacao', 'comprovacao_treinamento')
+    list_display = ('nome', 'cargo', 'setor', 'data_contratacao', 'comprovacao_treinamento', 'get_skills')
     search_fields = ('nome', 'cargo__nome')
     list_filter = ('cargo', 'comprovacao_treinamento')
 
@@ -97,6 +158,11 @@ class FuncionarioAdmin(admin.ModelAdmin):
             'fields': ('nome', 'setor', 'cargo', 'data_contratacao', 'comprovacao_treinamento')
         }),
     )
+
+    # Adicionar um método para exibir as habilidades na lista de funcionários
+    def get_skills(self, obj):
+        return ", ".join([skill.nome for skill in obj.skills.all()])
+    get_skills.short_description = 'Skills'
 
     # Restringir a visualização de funcionários por setor para gestores
     def get_queryset(self, request):
@@ -138,4 +204,3 @@ class FuncionarioAdmin(admin.ModelAdmin):
             return request.user.funcionario.is_rh
         except Funcionario.DoesNotExist:
             return False
-

@@ -1,6 +1,12 @@
 ﻿{% extends "admin/base_site.html" %}
 {% load i18n static %}
 
+{% block title %}Dashboard do Gestor - Skills Enforce{% endblock %}
+
+{% block branding %}
+    <!-- Removendo o logo padrão e título do Django Admin -->
+{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <style>
@@ -54,6 +60,25 @@
             color: #b30000;
             margin-bottom: 20px;
         }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .admin-button {
+            background-color: #b30000;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .admin-button:hover {
+            background-color: #800000;
+        }
     </style>
 {% endblock %}
 
@@ -62,6 +87,11 @@
         <div class="container">
             <h1>Dashboard do Gestor</h1>
             <h2>Setor: {{ setor.nome }}</h2>
+
+            <!-- Links de navegação -->
+            <div class="button-container">
+                <a href="{% url 'admin:core_funcionario_changelist' %}" class="admin-button">Gerenciar Funcionários</a>
+            </div>
 
             {% if funcionarios %}
                 <table>
