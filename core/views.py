@@ -6,8 +6,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Funcionario
 import csv
 
-
-
 def index(request):
     """
     Página inicial com opções de login para RH e Gestor.
@@ -28,8 +26,8 @@ def login_rh(request):
                 return redirect('admin:index')  # Redireciona para o admin do Django
             else:
                 return render(
-                    request, 
-                    'core/login_rh.html', 
+                    request,
+                    'core/login_rh.html',
                     {'form': form, 'error': 'Usuário não autorizado como RH.'}
                 )
     else:
@@ -47,7 +45,7 @@ def login_gestor(request):
             user = form.get_user()
             if hasattr(user, 'funcionario') and user.funcionario.is_gestor:
                 login(request, user)
-                return redirect('gestor_dashboard')  # Redireciona para o dashboard do gestor
+                return redirect('gestor_dashboard')  # Certifique-se de que essa URL está correta
             else:
                 return render(
                     request, 
@@ -64,10 +62,18 @@ def gestor_dashboard(request):
     """
     Dashboard para gestores, exibindo apenas funcionários do setor do gestor.
     """
-    if not hasattr(request.user, 'funcionario') or not request.user.funcionario.is_gestor:
+    # Verifica se o usuário logado está associado a um Funcionario
+    try:
+        funcionario = Funcionario.objects.get(usuario=request.user)
+    except Funcionario.DoesNotExist:
         return HttpResponse("Acesso não autorizado", status=403)
 
-    setor_do_gestor = request.user.funcionario.setor
+    # Verifica se o funcionário é um gestor
+    if not funcionario.is_gestor:
+        return HttpResponse("Acesso não autorizado", status=403)
+
+    # Recupera o setor do gestor e os funcionários do setor
+    setor_do_gestor = funcionario.setor
     funcionarios = Funcionario.objects.filter(setor=setor_do_gestor)
 
     return render(request, 'core/gestor_dashboard.html', {
@@ -81,15 +87,18 @@ def exportar_funcionarios(request):
     """
     Exporta funcionários em um arquivo CSV.
     """
-    if not request.user.is_staff:
+    # Garante que somente usuários autorizados podem exportar
+    if not request.user.is_staff and not (hasattr(request.user, 'funcionario') and request.user.funcionario.is_rh):
         return HttpResponse("Acesso negado", status=403)
 
+    # Configura a resposta como CSV
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="funcionarios.csv"'
 
     writer = csv.writer(response)
     writer.writerow(['Nome', 'Setor', 'Cargo', 'Data de Contratação', 'Treinamento Concluído', 'Skills'])
 
+    # Obtém os funcionários
     funcionarios = Funcionario.objects.select_related('setor', 'cargo').prefetch_related('skills')
     for funcionario in funcionarios:
         skills = ", ".join(skill.nome for skill in funcionario.skills.all())
@@ -103,3 +112,11 @@ def exportar_funcionarios(request):
         ])
 
     return response
+
+
+# Função utilitária para verificar se um usuário é um gestor
+def usuario_eh_gestor(user):
+    """
+    Retorna True se o usuário for um gestor.
+    """
+    return hasattr(user, 'funcionario') and user.funcionario.is_gestor

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 class Setor(models.Model):
     nome = models.CharField(max_length=100)
@@ -30,7 +31,7 @@ class Funcionario(models.Model):
     skills = models.ManyToManyField(Skill, through='FuncionarioSkill')
     is_rh = models.BooleanField(default=False)
     is_gestor = models.BooleanField(default=False)
-    data_contratacao = models.DateField()
+    data_contratacao = models.DateField(default=now)
     comprovacao_treinamento = models.BooleanField(default=False)
     
     # Campo opcional para o usuário
