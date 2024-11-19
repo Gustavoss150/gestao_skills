@@ -80,12 +80,12 @@ form ul.inline li {
 fieldset .fieldset-heading,
 fieldset .inline-heading,
 :not(.inline-related) .collapse summary {
-    border: 1px #b30000;
+    border: 1px #c32d3e;
     margin: 0;
     padding: 8px;
     font-weight: 400;
     font-size: 0.8125rem;
-    background: #b30000;
+    background: #c32d3e;
     color: var(--header-link-color);
 }
 

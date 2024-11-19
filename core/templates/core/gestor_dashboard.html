@@ -18,11 +18,11 @@
         }
 
         h1 {
-            color: #b30000;
+            color: #c32d3e;
         }
 
         h2 {
-            color: #b30000;
+            color: #c32d3e;
             margin-top: 20px;
         }
 
@@ -52,12 +52,12 @@
         .empty-row {
             text-align: center;
             background-color: #fff;
-            color: #b30000;
+            color: #c32d3e;
             font-weight: bold;
         }
 
         .errornote {
-            color: #b30000;
+            color: #c32d3e;
             margin-bottom: 20px;
         }
 
@@ -66,7 +66,7 @@
         }
 
         .admin-button {
-            background-color: #b30000;
+            background-color: #c32d3e;
             color: white;
             padding: 12px 24px;
             border: none;
@@ -101,6 +101,7 @@
                             <th>Cargo</th>
                             <th>Data de Contratação</th>
                             <th>Treinamento Concluído</th>
+                            <th>Skills</th>  <!-- Nova coluna para Skills -->
                         </tr>
                     </thead>
                     <tbody>
@@ -110,6 +111,16 @@
                                 <td>{{ funcionario.cargo.nome|default:"Sem Cargo" }}</td>
                                 <td>{{ funcionario.data_contratacao }}</td>
                                 <td>{{ funcionario.comprovacao_treinamento|yesno:"Sim,Não" }}</td>
+                                <td>
+                                    {% if funcionario.skills.all %}
+                                        <!-- Exibe as skills de cada funcionário -->
+                                        {% for skill in funcionario.skills.all %}
+                                            {{ skill.nome }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        Sem Skills
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -120,3 +131,4 @@
         </div>
     </div>
 {% endblock %}
+
