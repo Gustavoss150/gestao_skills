@@ -4,7 +4,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .models import Funcionario, Notificacao
+from .models import Treinamento, FuncionarioSkill
 import csv
+from django.db.models import Prefetch
 
 def index(request):
     """
@@ -199,3 +201,73 @@ def usuario_eh_gestor(user):
     Retorna True se o usuário for um gestor.
     """
     return hasattr(user, 'funcionario') and user.funcionario.is_gestor
+
+@login_required
+def treinamentos(request):
+    """
+    Exibe os treinamentos associados ao funcionário logado.
+    """
+    try:
+        funcionario = Funcionario.objects.get(usuario=request.user)
+    except Funcionario.DoesNotExist:
+        return HttpResponse("Funcionário não encontrado", status=404)
+
+    # Recupera os treinamentos do funcionário
+    treinamentos = Treinamento.objects.filter(funcionarios=funcionario)
+
+    return render(request, 'core/treinamentos.html', {
+        'treinamentos': treinamentos,
+        'funcionario': funcionario,
+    })
+
+def listar_treinamentos(request):
+    treinamentos = Treinamento.objects.prefetch_related(
+        Prefetch('funcionarios', queryset=Funcionario.objects.prefetch_related(
+            Prefetch('funcionarioskill_set', queryset=FuncionarioSkill.objects.select_related('skill'))
+        ))
+    )
+    return render(request, 'core/listar_treinamentos.html', {'treinamentos': treinamentos})
+
+@login_required
+def listar_skills(request, funcionario_id):
+    try:
+        funcionario = Funcionario.objects.get(id=funcionario_id)
+    except Funcionario.DoesNotExist:
+        return HttpResponse("Funcionário não encontrado", status=404)
+
+    # Acessar skills com informações adicionais através de FuncionarioSkill
+    skills_com_niveis = FuncionarioSkill.objects.filter(funcionario=funcionario)
+
+    return render(request, 'core/listar_skills.html', {
+        'funcionario': funcionario,
+        'skills_com_niveis': skills_com_niveis,  # Passa para o template
+    })
+
+@login_required
+def adicionar_skill(request, funcionario_id):
+    try:
+        funcionario = Funcionario.objects.get(id=funcionario_id)
+    except Funcionario.DoesNotExist:
+        return HttpResponse("Funcionário não encontrado", status=404)
+
+    if request.method == 'POST':
+        skill_id = request.POST.get('skill_id')
+        nivel = request.POST.get('nivel', 1)  # Nível padrão é 1
+        try:
+            skill = Skill.objects.get(id=skill_id)
+        except Skill.DoesNotExist:
+            return HttpResponse("Skill não encontrada", status=404)
+
+        # Criar ou atualizar a relação no FuncionarioSkill
+        FuncionarioSkill.objects.update_or_create(
+            funcionario=funcionario,
+            skill=skill,
+            defaults={'nivel': nivel}
+        )
+        return redirect('listar_skills', funcionario_id=funcionario.id)
+
+    skills_disponiveis = Skill.objects.all()
+    return render(request, 'core/adicionar_skill.html', {
+        'funcionario': funcionario,
+        'skills': skills_disponiveis,
+    })

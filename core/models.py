@@ -16,8 +16,9 @@ class Setor(models.Model):
 # Modelo de Cargo
 class Cargo(models.Model):
     nome = models.CharField(max_length=100)
-    descricao = models.TextField(blank=True, null=True)
     setor = models.ForeignKey(Setor, on_delete=models.CASCADE)
+    competencias = models.TextField(blank=True, null=True)
+    escopo_atividade = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.nome
@@ -60,11 +61,18 @@ class Funcionario(models.Model):
         return self.nome
 
 
-# Modelo de relação entre Funcionario e Skill
+# Modelo de FuncionarioSkill com campo de nível
 class FuncionarioSkill(models.Model):
     funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     data_adicao = models.DateTimeField(auto_now_add=True)
+    nivel = models.PositiveIntegerField(default=1)  # Nível da skill (1 a 4)
+
+    class Meta:
+        unique_together = ('funcionario', 'skill')  # Evita duplicação de relação
+
+    def __str__(self):
+        return f"{self.funcionario.nome} - {self.skill.nome} (Nível {self.nivel})"
 
 
 # Modelo de Notificação
@@ -95,3 +103,17 @@ def criar_notificacao_novo_funcionario(sender, instance, created, **kwargs):
         
         for gestor in gestores_do_setor:
             Notificacao.objects.create(usuario=gestor, mensagem=mensagem)
+
+
+# Modelo de Treinamento
+class Treinamento(models.Model):
+    nome = models.CharField(max_length=100, default='Desconhecido')
+    descricao = models.TextField(blank=True, null=True)
+    skills = models.ManyToManyField(Skill, related_name="treinamentos")
+    funcionarios = models.ManyToManyField(Funcionario, related_name="treinamentos")
+    data_inicio = models.DateField()
+    data_fim = models.DateField()
+    finalizado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Treinamento: {self.nome} ({'Finalizado' if self.finalizado else 'Em andamento'})"            

@@ -1,5 +1,6 @@
+from django import forms
 from django.contrib import admin
-from .models import Funcionario, Skill, Setor, Cargo, FuncionarioSkill
+from .models import Funcionario, Skill, Setor, Cargo, FuncionarioSkill, Treinamento
 from django.contrib.auth.models import User, Group
 import csv
 from django.http import HttpResponse
@@ -13,6 +14,8 @@ admin.site.site_header = "Skills Enforce"
 admin.site.site_title = "Gestão de Skills Admin"
 admin.site.index_title = "Bem-vindo à Gestão de Skills"
 admin.site.index_template = "admin/index.html"
+
+
 
 # Função para exportar funcionários em CSV
 def exportar_funcionarios_csv(modeladmin, request, queryset):
@@ -70,9 +73,11 @@ class SkillAdmin(admin.ModelAdmin):
 # Configuração do admin para Cargos
 @admin.register(Cargo)
 class CargoAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'setor')
+    list_display = ('nome', 'setor', 'competencias', 'escopo_atividade')
     search_fields = ('nome',)
     list_filter = ('setor',)
+    # Permite edição dos campos de competências e escopo de atividade
+    fields = ('nome', 'setor', 'competencias', 'escopo_atividade')
 
     def get_model_perms(self, request):
         """Permitir que apenas o RH veja o modelo de Cargo no admin."""
@@ -90,8 +95,17 @@ class CargoAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request):
         if hasattr(request.user, 'funcionario') and request.user.funcionario.is_rh:
-            return ('nome', 'setor')  # Só exibe para RH
+            return ('nome', 'setor', 'competencias', 'escopo_atividade')  # Exibe para RH
         return ()  # Para gestores, não exibe nada
+
+    def get_search_results(self, request, queryset, search_term):
+        """Filtrar a busca para que busque também nas competências e escopo de atividade"""
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        if search_term:
+            queryset = queryset.filter(
+                Q(competencias__icontains=search_term) | Q(escopo_atividade__icontains=search_term)
+            )
+        return queryset, use_distinct
 
 
 # Inline para exibir funcionários dentro dos setores
@@ -134,15 +148,52 @@ class SetorAdmin(admin.ModelAdmin):
         return ()  # Para gestores, não exibe nada
 
 
-# Inline para FuncionarioSkill
+# Inline para FuncionarioSkill com campo de nível
 class FuncionarioSkillInline(admin.TabularInline):
     model = FuncionarioSkill
-    extra = 1  # Quantidade de linhas extras para adicionar habilidades
+    extra = 1
+    fields = ('skill', 'nivel', 'data_adicao')
+    readonly_fields = ('data_adicao',)
+    
+
+# Configuração do admin para Treinamentos
+@admin.register(Treinamento)
+class TreinamentoAdmin(admin.ModelAdmin):
+    list_display = ('nome_funcionarios', 'skills_treinadas', 'data_inicio', 'data_fim', 'finalizado')
+    search_fields = ('funcionarios__nome', 'skills__nome')
+    list_filter = ('finalizado', 'data_inicio')
+    filter_horizontal = ('skills', 'funcionarios')  # Para facilitar seleção no ManyToMany
+
+    def nome_funcionarios(self, obj):
+        """
+        Retorna os nomes dos funcionários associados ao treinamento.
+        """
+        return ", ".join([funcionario.nome for funcionario in obj.funcionarios.all()])
+    nome_funcionarios.short_description = 'Funcionários'
+
+    def skills_treinadas(self, obj):
+        """
+        Retorna as skills associadas ao treinamento com o nível atual de cada funcionário.
+        """
+        skills_info = []
+        for funcionario in obj.funcionarios.all():
+            for relacao in funcionario.funcionarioskill_set.all():
+                if relacao.skill in obj.skills.all():  # Filtrar apenas skills relacionadas ao treinamento
+                    skills_info.append(f"{relacao.skill.nome} (Nível Atual: {relacao.nivel}, Próximo: {relacao.nivel + 1})")
+        return "; ".join(skills_info)
+    skills_treinadas.short_description = 'Skills e Níveis'
+
+    def get_queryset(self, request):
+        """
+        Otimiza o queryset para evitar consultas excessivas.
+        """
+        qs = super().get_queryset(request)
+        return qs.prefetch_related('funcionarios__funcionarioskill_set__skill')
 
 # Configuração do admin para Funcionários com permissões de RH e gestor
 @admin.register(Funcionario)
 class FuncionarioAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'cargo', 'setor', 'data_contratacao', 'comprovacao_treinamento', 'get_skills')
+    list_display = ('nome', 'cargo', 'setor', 'data_contratacao', 'comprovacao_treinamento', 'get_skills', )
     search_fields = ('nome', 'cargo__nome')
     list_filter = ('cargo', 'comprovacao_treinamento')
 
@@ -204,3 +255,4 @@ class FuncionarioAdmin(admin.ModelAdmin):
             return request.user.funcionario.is_rh
         except Funcionario.DoesNotExist:
             return False
+

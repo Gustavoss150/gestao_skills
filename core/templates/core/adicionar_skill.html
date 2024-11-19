@@ -1,0 +1,15 @@
+﻿<h2>Adicionar Skill para {{ funcionario.nome }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="skill_id">Skill:</label>
+    <select name="skill_id">
+        {% for skill in skills %}
+            <option value="{{ skill.id }}">{{ skill.nome }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="nivel">Nível:</label>
+    <input type="number" name="nivel" min="1" max="4" value="1">
+    <br>
+    <button type="submit">Adicionar Skill</button>
+</form>

@@ -1,0 +1,27 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<h1>Treinamentos de {{ funcionario.nome }}</h1>
+
+{% if treinamentos %}
+    <ul>
+        {% for treinamento in treinamentos %}
+            <li>
+                <strong>{{ treinamento.nome }}</strong> - 
+                {% if treinamento.finalizado %}
+                    <span style="color: green;">Finalizado</span>
+                {% else %}
+                    <span style="color: orange;">Em andamento</span>
+                {% endif %}
+                <p>{{ treinamento.descricao }}</p>
+                <p><strong>Data:</strong> {{ treinamento.data_inicio }} a {{ treinamento.data_fim }}</p>
+                <p><strong>Skills:</strong> 
+                    {{ treinamento.skills.all|join:", " }}
+                </p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Você ainda não está participando de nenhum treinamento.</p>
+{% endif %}
+{% endblock %}

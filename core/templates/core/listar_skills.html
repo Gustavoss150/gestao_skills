@@ -1,0 +1,9 @@
+﻿<h2>Skills de {{ funcionario.nome }}</h2>
+<ul>
+    {% for relacao in skills_com_niveis %}
+        <li>
+            {{ relacao.skill.nome }} - Nível: {{ relacao.nivel }}
+            (Adicionado em: {{ relacao.data_adicao|date:"d/m/Y" }})
+        </li>
+    {% endfor %}
+</ul>

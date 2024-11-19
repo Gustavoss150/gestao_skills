@@ -9,4 +9,5 @@ urlpatterns = [
     path('gestor/dashboard/', views.gestor_dashboard, name='gestor_dashboard'),  # Dashboard do Gestor
     path('notificacoes/', views.notificacoes, name='notificacoes'),
     path('notificacao/<int:notificacao_id>/marcar_lida/', views.marcar_notificacao_lida, name='marcar_notificacao_lida'),
+    path('treinamentos/', views.treinamentos, name='treinamentos'),
 ]
