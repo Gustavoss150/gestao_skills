@@ -105,15 +105,15 @@ def criar_notificacao_novo_funcionario(sender, instance, created, **kwargs):
             Notificacao.objects.create(usuario=gestor, mensagem=mensagem)
 
 
-# Modelo de Treinamento
 class Treinamento(models.Model):
-    nome = models.CharField(max_length=100, default='Desconhecido')
-    descricao = models.TextField(blank=True, null=True)
-    skills = models.ManyToManyField(Skill, related_name="treinamentos")
-    funcionarios = models.ManyToManyField(Funcionario, related_name="treinamentos")
+    nome = models.CharField(max_length=200)  # Campo atual para nome do treinamento
     data_inicio = models.DateField()
-    data_fim = models.DateField()
+    data_fim = models.DateField(null=True, blank=True)
     finalizado = models.BooleanField(default=False)
+    skills = models.ManyToManyField(Skill)
+    funcionarios = models.ManyToManyField(Funcionario)
 
     def __str__(self):
-        return f"Treinamento: {self.nome} ({'Finalizado' if self.finalizado else 'Em andamento'})"            
+        # Retorna o nome dos funcionários relacionados e a data de início
+        funcionarios_nomes = ", ".join(funcionario.nome for funcionario in self.funcionarios.all())
+        return f"Treinamento de {funcionarios_nomes} - {self.data_inicio.strftime('%d/%m/%Y') if self.data_inicio else 'Sem data'}"        
